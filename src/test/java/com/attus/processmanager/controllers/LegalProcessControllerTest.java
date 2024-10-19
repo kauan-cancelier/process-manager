@@ -16,6 +16,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDateTime;
 import java.util.Collections;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,11 +47,18 @@ class LegalProcessControllerTest {
 
     @BeforeEach
     void setUp() {
-        legalProcess = new LegalProcess();
-        legalProcess.setId(1L);
-        legalProcess.setNumber(123L);
-        legalProcess.setDescription("Test Process");
+        legalProcess =createLegalProcess();
     }
+
+    private LegalProcess createLegalProcess() {
+        return LegalProcess.builder()
+                .id(1L)
+                .openingDate(LocalDateTime.now())
+                .description("Test Process")
+                .number(123L)
+                .build();
+    }
+
 
     @Test
     void testSave() throws Exception {
@@ -59,6 +68,21 @@ class LegalProcessControllerTest {
                         .content(objectMapper.writeValueAsString(legalProcess)))
                         .andExpect(status().isCreated());
     }
+
+    @Test
+    void testUpdate() throws Exception {
+        LegalProcess updatedLegalProcess = createLegalProcess();
+        updatedLegalProcess.setDescription("Updated Legal Process");
+
+        Mockito.when(service.getById(legalProcess.getId())).thenReturn(legalProcess);
+        Mockito.when(service.save(Mockito.any(LegalProcess.class))).thenReturn(updatedLegalProcess);
+
+        mockMvc.perform(put(url + "/" + legalProcess.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedLegalProcess)))
+                .andExpect(status().isOk());
+    }
+
 
     @Test
     void testInsertSameLegalProcessNumber() throws Exception {
@@ -111,6 +135,13 @@ class LegalProcessControllerTest {
     void testActivateProcess() throws Exception {
         Mockito.when(service.inactivateProcess(legalProcess.getId())).thenReturn(legalProcess);
         mockMvc.perform(put("/legal-processes/" + legalProcess.getId() + "/activate"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetById() throws Exception {
+        Mockito.when(service.getById(legalProcess.getId())).thenReturn(legalProcess);
+        mockMvc.perform(get(url + "/" + legalProcess.getId()))
                 .andExpect(status().isOk());
     }
 

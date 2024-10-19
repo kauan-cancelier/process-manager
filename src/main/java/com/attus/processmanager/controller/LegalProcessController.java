@@ -34,7 +34,7 @@ public class LegalProcessController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody LegalProcessSaveRequest process) {
+    public ResponseEntity<String> create(@RequestBody LegalProcessSaveRequest process) {
         try {
             LegalProcess legalProcess = service.save(process.toModel());
             URI location = new URI("/legal-processes/" + legalProcess.getId());
@@ -47,14 +47,13 @@ public class LegalProcessController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LegalProcessUpdateRequest updatedProcess) {
+    public ResponseEntity<String> update(@PathVariable("id") Long id, @RequestBody LegalProcessUpdateRequest updatedProcess) {
         try {
             LegalProcess existingProcess = service.getById(id);
 
             existingProcess.setDescription(updatedProcess.getDescription());
             existingProcess.setNumber(updatedProcess.getNumber());
             LegalProcess editedLegalProcess = service.save(existingProcess);
-
             URI location = new URI("/legal-processes/" + editedLegalProcess.getId());
             return ResponseEntity.ok().location(location).build();
         } catch (Exception e) {
@@ -63,7 +62,7 @@ public class LegalProcessController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
         try {
             LegalProcess toRemoveProcess = service.getById(id);
             service.remove(toRemoveProcess);
@@ -74,7 +73,7 @@ public class LegalProcessController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> getById(@PathVariable("id") Long id) {
         try {
             LegalProcess legalProcess = service.getById(id);
             List<Stakeholder> stakes = stakeholderLegalProcessService.listBy(legalProcess);
@@ -90,7 +89,7 @@ public class LegalProcessController {
     }
 
     @PutMapping("/{id}/inactivate")
-    public ResponseEntity<?> inactivateProcess(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> inactivateProcess(@PathVariable("id") Long id) {
         try {
             LegalProcess inactivatedProcess = service.inactivateProcess(id);
             return ResponseEntity.ok(inactivatedProcess);
@@ -102,7 +101,7 @@ public class LegalProcessController {
     }
 
     @PutMapping("/{id}/activate")
-    public ResponseEntity<?> activateProcess(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> activateProcess(@PathVariable("id") Long id) {
         try {
             LegalProcess inactivatedProcess = service.activateProcess(id);
             return ResponseEntity.ok(inactivatedProcess);

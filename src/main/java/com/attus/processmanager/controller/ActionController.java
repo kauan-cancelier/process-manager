@@ -25,7 +25,7 @@ public class ActionController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody ActionSaveRequest actionSaveRequest) {
+    public ResponseEntity<Object> create(@RequestBody ActionSaveRequest actionSaveRequest) {
         try {
             Action action = actionService.save(actionSaveRequest.toModel());
             URI location = new URI("/actions/" + action.getId());
@@ -38,7 +38,7 @@ public class ActionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ActionUpdateRequest updatedAction) {
+    public ResponseEntity<Object> update(@PathVariable("id") Long id, @RequestBody ActionUpdateRequest updatedAction) {
         try {
             Action existingAction = actionService.getById(id);
 
@@ -56,7 +56,7 @@ public class ActionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
         try {
             Action toRemoveAction = actionService.getById(id);
             actionService.remove(toRemoveAction);
@@ -67,7 +67,7 @@ public class ActionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> getById(@PathVariable("id") Long id) {
         try {
             Action action = actionService.getById(id);
             return ResponseEntity.ok(action);

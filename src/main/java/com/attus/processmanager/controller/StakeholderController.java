@@ -19,12 +19,12 @@ public class StakeholderController {
     private final StakeholderService stakeholderService;
 
     @GetMapping
-    public ResponseEntity<List<?>> findAll(@RequestParam(required = false) StakeholderType type) {
+    public ResponseEntity<List<Stakeholder>> findAll(@RequestParam(required = false) StakeholderType type) {
         return ResponseEntity.ok(stakeholderService.list(type));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody StakeholderSaveRequest stakeholderSaveRequest) {
+    public ResponseEntity<Object> create(@RequestBody StakeholderSaveRequest stakeholderSaveRequest) {
         try {
             Stakeholder stakeholder = stakeholderService.save(stakeholderSaveRequest.toModel());
             URI location = new URI("/stakeholders/" + stakeholder.getId());
@@ -37,7 +37,7 @@ public class StakeholderController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody Stakeholder updatedStakeholder) {
+    public ResponseEntity<Object> update(@PathVariable("id") Long id, @RequestBody Stakeholder updatedStakeholder) {
         try {
             Stakeholder existingStakeholder = stakeholderService.getById(id);
             updatedStakeholder.setId(existingStakeholder.getId());
@@ -50,7 +50,7 @@ public class StakeholderController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
         try {
             Stakeholder toRemoveStakeholder = stakeholderService.getById(id);
             stakeholderService.remove(toRemoveStakeholder);
@@ -61,7 +61,7 @@ public class StakeholderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> getById(@PathVariable("id") Long id) {
         try {
             Stakeholder stakeholder = stakeholderService.getById(id);
             return ResponseEntity.ok(stakeholder);

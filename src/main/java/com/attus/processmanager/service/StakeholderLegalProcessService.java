@@ -1,6 +1,5 @@
 package com.attus.processmanager.service;
 
-import com.attus.processmanager.models.Action;
 import com.attus.processmanager.models.LegalProcess;
 import com.attus.processmanager.models.Stakeholder;
 import com.attus.processmanager.models.StakeholderLegalProcess;

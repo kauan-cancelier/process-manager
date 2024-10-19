@@ -8,6 +8,7 @@ class LegalProcessManagerApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// Noncompliant - method is empty
 	}
 
 }

@@ -3,9 +3,7 @@ package com.attus.processmanager.controllers;
 import com.attus.processmanager.controller.ActionController;
 import com.attus.processmanager.models.Action;
 import com.attus.processmanager.models.LegalProcess;
-import com.attus.processmanager.models.Stakeholder;
 import com.attus.processmanager.models.enums.ActionType;
-import com.attus.processmanager.models.enums.StakeholderType;
 import com.attus.processmanager.service.ActionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +36,7 @@ class ActionControllerTest {
     @MockBean
     private ActionService service;
 
-    private final String url = "/actions";
+    private static final String URL = "/actions";
 
     private Action action;
 
@@ -68,7 +66,7 @@ class ActionControllerTest {
     @Test
     void testCreate() throws Exception {
         Mockito.when(service.save(Mockito.any(Action.class))).thenReturn(action);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(action)))
                 .andExpect(status().isCreated());
@@ -82,7 +80,7 @@ class ActionControllerTest {
         Mockito.when(service.getById(action.getId())).thenReturn(action);
         Mockito.when(service.save(Mockito.any(Action.class))).thenReturn(updatedAction);
 
-        mockMvc.perform(put(url + "/" + action.getId())
+        mockMvc.perform(put(URL + "/" + action.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedAction)))
                 .andExpect(status().isOk());
@@ -91,21 +89,21 @@ class ActionControllerTest {
     @Test
     void testDelete() throws Exception {
         Mockito.doNothing().when(service).remove(action);
-        mockMvc.perform(delete(url + "/" + action.getId()))
+        mockMvc.perform(delete(URL + "/" + action.getId()))
                 .andExpect(status().isOk());
     }
 
     @Test
     void testFindById() throws Exception {
         Mockito.when(service.getById(action.getId())).thenReturn(action);
-        mockMvc.perform(get(url + "/" + action.getId()))
+        mockMvc.perform(get(URL + "/" + action.getId()))
                 .andExpect(status().isOk());
     }
 
     @Test
     void testList() throws Exception {
         Mockito.when(service.list(action.getType())).thenReturn(Collections.singletonList(action));
-        mockMvc.perform(get(url + "?type=" + action.getType())).andExpect(status().isOk());
+        mockMvc.perform(get(URL + "?type=" + action.getType())).andExpect(status().isOk());
     }
 
 }

@@ -43,7 +43,7 @@ class LegalProcessControllerTest {
 
     private LegalProcess legalProcess;
     
-    private final String url = "/legal-processes";
+    private static final String URL = "/legal-processes";
 
     @BeforeEach
     void setUp() {
@@ -59,11 +59,10 @@ class LegalProcessControllerTest {
                 .build();
     }
 
-
     @Test
     void testSave() throws Exception {
         Mockito.when(service.save(Mockito.any(LegalProcess.class))).thenReturn(legalProcess);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(legalProcess)))
                         .andExpect(status().isCreated());
@@ -77,7 +76,7 @@ class LegalProcessControllerTest {
         Mockito.when(service.getById(legalProcess.getId())).thenReturn(legalProcess);
         Mockito.when(service.save(Mockito.any(LegalProcess.class))).thenReturn(updatedLegalProcess);
 
-        mockMvc.perform(put(url + "/" + legalProcess.getId())
+        mockMvc.perform(put(URL + "/" + legalProcess.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedLegalProcess)))
                 .andExpect(status().isOk());
@@ -90,12 +89,12 @@ class LegalProcessControllerTest {
                 .thenReturn(legalProcess)
                 .thenThrow(new IllegalArgumentException("Processo com este número já existe"));
 
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(legalProcess)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(legalProcess)))
                 .andExpect(status().isBadRequest());
@@ -104,7 +103,7 @@ class LegalProcessControllerTest {
     @Test
     void testDelete() throws Exception {
         Mockito.doNothing().when(service).remove(legalProcess);
-        mockMvc.perform(delete("/legal-processes/" + legalProcess.getId()))
+        mockMvc.perform(delete(URL + "/" + legalProcess.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
     }
@@ -112,7 +111,7 @@ class LegalProcessControllerTest {
     @Test
     void testFindAll() throws Exception {
         Mockito.when(service.list(LegalProcessStatus.ATIVO)).thenReturn(Collections.singletonList(legalProcess));
-        mockMvc.perform(get(url))
+        mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
                 .andReturn();
     }
@@ -120,28 +119,28 @@ class LegalProcessControllerTest {
     @Test
     void testFindByStatusAtivo() throws Exception {
         Mockito.when(service.list(LegalProcessStatus.ATIVO)).thenReturn(Collections.singletonList(legalProcess));
-        mockMvc.perform(get("/legal-processes?legalProcessStatus=", LegalProcessStatus.ATIVO))
+        mockMvc.perform(get(URL + "?legalProcessStatus=", LegalProcessStatus.ATIVO))
                 .andExpect(status().isOk());
     }
 
     @Test
     void testInactivateProcess() throws Exception {
         Mockito.when(service.inactivateProcess(legalProcess.getId())).thenReturn(legalProcess);
-        mockMvc.perform(put("/legal-processes/" + legalProcess.getId() + "/inactivate"))
+        mockMvc.perform(put(URL + "/" +legalProcess.getId() + "/inactivate"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void testActivateProcess() throws Exception {
         Mockito.when(service.inactivateProcess(legalProcess.getId())).thenReturn(legalProcess);
-        mockMvc.perform(put("/legal-processes/" + legalProcess.getId() + "/activate"))
+        mockMvc.perform(put(URL + "/" + legalProcess.getId() + "/activate"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void testGetById() throws Exception {
         Mockito.when(service.getById(legalProcess.getId())).thenReturn(legalProcess);
-        mockMvc.perform(get(url + "/" + legalProcess.getId()))
+        mockMvc.perform(get(URL + "/" + legalProcess.getId()))
                 .andExpect(status().isOk());
     }
 

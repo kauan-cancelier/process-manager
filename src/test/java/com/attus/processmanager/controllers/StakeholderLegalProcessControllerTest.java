@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @WebMvcTest(controllers = StakeholderLegalProcessControler.class)
-public class StakeholderLegalProcessControllerTest {
+class StakeholderLegalProcessControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,7 +36,7 @@ public class StakeholderLegalProcessControllerTest {
 
     private StakeholderLegalProcess stakeholderLegalProcess;
 
-    private static final String url = "/stakeholders-legal-process";
+    private static final String URL = "/stakeholders-legal-process";
 
     @BeforeEach
     void setUp() {
@@ -74,7 +74,7 @@ public class StakeholderLegalProcessControllerTest {
     @Test
     void testSave() throws Exception {
         Mockito.when(service.save(Mockito.any(StakeholderLegalProcess.class))).thenReturn(stakeholderLegalProcess);
-        mockMvc.perform(post(url)
+        mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(stakeholderLegalProcess)))
                 .andExpect(status().isCreated());
@@ -83,7 +83,7 @@ public class StakeholderLegalProcessControllerTest {
     @Test
     void testDelete() throws Exception {
         Mockito.doNothing().when(service).remove(stakeholderLegalProcess);
-        mockMvc.perform(delete(url + "/" + stakeholderLegalProcess.getId()))
+        mockMvc.perform(delete(URL + "/" + stakeholderLegalProcess.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
     }

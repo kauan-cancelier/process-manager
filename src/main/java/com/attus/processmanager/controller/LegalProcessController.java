@@ -1,10 +1,15 @@
 package com.attus.processmanager.controller;
 
+import com.attus.processmanager.dto.LegalProcessDto;
 import com.attus.processmanager.dto.LegalProcessSaveRequest;
 import com.attus.processmanager.dto.LegalProcessUpdateRequest;
+import com.attus.processmanager.models.Action;
 import com.attus.processmanager.models.LegalProcess;
+import com.attus.processmanager.models.Stakeholder;
 import com.attus.processmanager.models.enums.LegalProcessStatus;
+import com.attus.processmanager.service.ActionService;
 import com.attus.processmanager.service.LegalProcessService;
+import com.attus.processmanager.service.StakeholderLegalProcessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +23,10 @@ import java.util.List;
 public class LegalProcessController {
 
     private final LegalProcessService service;
+
+    private final StakeholderLegalProcessService stakeholderLegalProcessService;
+
+    private final ActionService actionService;
 
     @GetMapping
     public ResponseEntity<List<LegalProcess>> findAll(@RequestParam(required = false) LegalProcessStatus legalProcessStatus) {
@@ -68,7 +77,10 @@ public class LegalProcessController {
     public ResponseEntity<?> getById(@PathVariable("id") Long id) {
         try {
             LegalProcess legalProcess = service.getById(id);
-            return ResponseEntity.ok(legalProcess);
+            List<Stakeholder> stakes = stakeholderLegalProcessService.listBy(legalProcess);
+            List<Action> actions = actionService.listBy(legalProcess);
+            LegalProcessDto processDto = new LegalProcessDto(legalProcess, stakes, actions);
+            return ResponseEntity.ok(processDto);
         } catch (IllegalArgumentException ie) {
             return ResponseEntity.badRequest().body(ie.getMessage());
         }

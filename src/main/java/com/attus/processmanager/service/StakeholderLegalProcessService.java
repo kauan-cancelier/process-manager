@@ -1,11 +1,14 @@
 package com.attus.processmanager.service;
 
 import com.attus.processmanager.models.Action;
+import com.attus.processmanager.models.LegalProcess;
 import com.attus.processmanager.models.Stakeholder;
 import com.attus.processmanager.models.StakeholderLegalProcess;
 import com.attus.processmanager.repository.StakeholderLegalProcessRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +31,10 @@ public class StakeholderLegalProcessService {
         }
         return stakeholderLegalProcess;
     }
+
+    public List<Stakeholder> listBy(LegalProcess legalProcess) {
+        return repository.listBy(legalProcess);
+    }
+
 
 }

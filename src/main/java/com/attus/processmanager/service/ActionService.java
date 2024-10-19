@@ -1,6 +1,7 @@
 package com.attus.processmanager.service;
 
 import com.attus.processmanager.models.Action;
+import com.attus.processmanager.models.LegalProcess;
 import com.attus.processmanager.models.enums.ActionType;
 import com.attus.processmanager.repository.ActionRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,10 @@ public class ActionService {
             return actionRepository.findAll();
         }
         return actionRepository.listBy(type);
+    }
 
+    public List<Action> listBy(LegalProcess legalProcess) {
+        return actionRepository.findBy(legalProcess);
     }
 
 }

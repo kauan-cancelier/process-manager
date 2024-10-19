@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: ProcessManager
+  datasource:
+    url: jdbc:postgresql://localhost:5432/process_manager
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true

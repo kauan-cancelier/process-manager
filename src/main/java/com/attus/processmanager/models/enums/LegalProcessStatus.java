@@ -1,6 +1,6 @@
 package com.attus.processmanager.models.enums;
 
-public enum Status {
+public enum LegalProcessStatus {
     ATIVO,
     SUSPENSO,
     ARQUIVADO;

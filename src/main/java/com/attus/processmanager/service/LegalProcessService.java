@@ -1,7 +1,7 @@
 package com.attus.processmanager.service;
 
 import com.attus.processmanager.models.LegalProcess;
-import com.attus.processmanager.models.enums.Status;
+import com.attus.processmanager.models.enums.LegalProcessStatus;
 import com.attus.processmanager.repository.LegalProcessRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,11 +15,11 @@ public class LegalProcessService {
     private final LegalProcessRepository legalProcessRepository;
 
     public LegalProcess save(LegalProcess process) {
-        if (legalProcessRepository.existsByCaseNumber(process.getCaseNumber())) {
+        if (legalProcessRepository.existsByNumber(process.getNumber())) {
             throw new IllegalArgumentException("Case number already exists");
         }
         if (process.getStatus() == null) {
-            process.setStatus(Status.ATIVO);
+            process.setStatus(LegalProcessStatus.ATIVO);
         }
         return legalProcessRepository.save(process);
     }
@@ -33,31 +33,31 @@ public class LegalProcessService {
         if (process == null) {
             throw new IllegalArgumentException("Process not found");
         }
-        return legalProcessRepository.findBy(id);
+        return process;
     }
 
-    public List<LegalProcess> list(Status status) {
-        if (status == null) {
+    public List<LegalProcess> list(LegalProcessStatus legalProcessStatus) {
+        if (legalProcessStatus == null) {
             return legalProcessRepository.findAll();
         }
-        return legalProcessRepository.listBy(status);
+        return legalProcessRepository.listBy(legalProcessStatus);
 
     }
 
     public LegalProcess inactivateProcess(Long id) {
         LegalProcess process = legalProcessRepository.findBy(id);
-        return changeStatus(process, Status.ARQUIVADO);
+        return changeStatus(process, LegalProcessStatus.ARQUIVADO);
 
     }
 
     public LegalProcess activateProcess(Long id) {
         LegalProcess process = legalProcessRepository.findBy(id);
-        return changeStatus(process, Status.ATIVO);
+        return changeStatus(process, LegalProcessStatus.ATIVO);
     }
 
-    private LegalProcess changeStatus(LegalProcess process, Status status) {
-        if (process.getStatus() != status) {
-            process.setStatus(status);
+    private LegalProcess changeStatus(LegalProcess process, LegalProcessStatus legalProcessStatus) {
+        if (process.getStatus() != legalProcessStatus) {
+            process.setStatus(legalProcessStatus);
             return legalProcessRepository.save(process);
         }
         return process;

@@ -7,8 +7,8 @@ public class LegalProcessUpdateRequest {
 
     private Long id;
 
-    private Long caseNumber;
+    private Long number;
 
-    private String caseDescription;
+    private String description;
 
 }

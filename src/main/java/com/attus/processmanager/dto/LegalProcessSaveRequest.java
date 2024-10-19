@@ -14,14 +14,14 @@ import java.time.LocalDateTime;
 @Builder
 public class LegalProcessSaveRequest {
 
-    private Long caseNumber;
+    private Long number;
 
-    private String caseDescription;
+    private String description;
 
     public LegalProcess toModel() {
         return LegalProcess.builder()
-                .caseDescription(caseDescription)
-                .caseNumber(caseNumber)
+                .description(description)
+                .number(number)
                 .openingDate(LocalDateTime.now())
                 .build();
     }

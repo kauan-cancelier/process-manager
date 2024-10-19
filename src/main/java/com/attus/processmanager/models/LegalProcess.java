@@ -1,6 +1,6 @@
 package com.attus.processmanager.models;
 
-import com.attus.processmanager.models.enums.Status;
+import com.attus.processmanager.models.enums.LegalProcessStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,17 +20,17 @@ public class LegalProcess {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private Long caseNumber;
+    @Column(name = "number", nullable = false, unique = true)
+    private Long number;
 
-    @Column(nullable = false)
+    @Column(name = "opening_date", nullable = false)
     private LocalDateTime openingDate;
 
-    @Column(nullable = false)
-    private String caseDescription;
+    @Column(name = "description", nullable = false)
+    private String description;
 
-    @Column
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private LegalProcessStatus status;
 
 }

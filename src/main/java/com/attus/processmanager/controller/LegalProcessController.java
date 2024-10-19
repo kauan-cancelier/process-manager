@@ -3,7 +3,7 @@ package com.attus.processmanager.controller;
 import com.attus.processmanager.dto.LegalProcessSaveRequest;
 import com.attus.processmanager.dto.LegalProcessUpdateRequest;
 import com.attus.processmanager.models.LegalProcess;
-import com.attus.processmanager.models.enums.Status;
+import com.attus.processmanager.models.enums.LegalProcessStatus;
 import com.attus.processmanager.service.LegalProcessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +20,8 @@ public class LegalProcessController {
     private final LegalProcessService service;
 
     @GetMapping
-    public ResponseEntity<List<LegalProcess>> findAll(@RequestParam(required = false) Status status) {
-        return ResponseEntity.ok(service.list(status));
+    public ResponseEntity<List<LegalProcess>> findAll(@RequestParam(required = false) LegalProcessStatus legalProcessStatus) {
+        return ResponseEntity.ok(service.list(legalProcessStatus));
     }
 
     @PostMapping
@@ -42,8 +42,8 @@ public class LegalProcessController {
         try {
             LegalProcess existingProcess = service.getById(id);
 
-            existingProcess.setCaseDescription(updatedProcess.getCaseDescription());
-            existingProcess.setCaseNumber(updatedProcess.getCaseNumber());
+            existingProcess.setDescription(updatedProcess.getDescription());
+            existingProcess.setNumber(updatedProcess.getNumber());
             LegalProcess editedLegalProcess = service.save(existingProcess);
 
             URI location = new URI("/legal-processes/" + editedLegalProcess.getId());

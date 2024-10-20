@@ -6,6 +6,7 @@ import com.attus.processmanager.repository.LegalProcessRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.beans.Transient;
 import java.util.List;
 
 @Service
@@ -18,7 +19,7 @@ public class LegalProcessService {
         if (legalProcessRepository.existsByNumber(process.getNumber())) {
             throw new IllegalArgumentException("Case number already exists");
         }
-        if (process.getStatus() == null) {
+        if (process.getId() == null && process.getStatus() == null) {
             process.setStatus(LegalProcessStatus.ATIVO);
         }
         return legalProcessRepository.save(process);

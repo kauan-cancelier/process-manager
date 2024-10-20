@@ -4,6 +4,7 @@ import com.attus.processmanager.models.Action;
 import com.attus.processmanager.models.LegalProcess;
 import com.attus.processmanager.models.enums.ActionType;
 import com.attus.processmanager.repository.ActionRepository;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,22 +20,28 @@ public class ActionService {
     private final LegalProcessService legalProcessService;
 
     public Action save(Action action) {
+        Preconditions.checkNotNull(action, "Action must not be null");
+        Preconditions.checkNotNull(action.getLegalProcess(), "Legal process must not be null");
+        Preconditions.checkNotNull(action.getLegalProcess().getId(), "Legal process ID must not be null");
+
         legalProcessService.getById(action.getLegalProcess().getId());
+
         if (action.getRegistrationDate() == null) {
             action.setRegistrationDate(LocalDateTime.now());
         }
+
         return actionRepository.save(action);
     }
 
     public void remove(Action action) {
+        Preconditions.checkNotNull(action, "Action must not be null");
         actionRepository.delete(action);
     }
 
     public Action getById(Long id) {
+        Preconditions.checkNotNull(id, "Action ID must not be null");
         Action action = actionRepository.findBy(id);
-        if (action == null) {
-            throw new IllegalArgumentException("Action not found");
-        }
+        Preconditions.checkNotNull(action, "Action not found");
         return action;
     }
 
@@ -46,6 +53,7 @@ public class ActionService {
     }
 
     public List<Action> listBy(LegalProcess legalProcess) {
+        Preconditions.checkNotNull(legalProcess, "Legal process must not be null");
         return actionRepository.findBy(legalProcess);
     }
 

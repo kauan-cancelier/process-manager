@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
+import java.net.URISyntaxException;
 
 @RestController
 @RequestMapping("actions")
@@ -20,8 +20,16 @@ public class ActionController {
     private final ActionService actionService;
 
     @GetMapping
-    public ResponseEntity<List<Action>> findAll(@RequestParam(required = false)ActionType type) {
-        return ResponseEntity.ok(actionService.list(type));
+    public ResponseEntity<Object> findAll(@RequestParam(required = false) String type) {
+        try {
+            if (type != null && !type.isBlank()) {
+                return ResponseEntity.ok(actionService.list(ActionType.tryConvert(type)));
+            }
+            return ResponseEntity.ok(actionService.list(null));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping
@@ -30,8 +38,8 @@ public class ActionController {
             Action action = actionService.save(actionSaveRequest.toModel());
             URI location = new URI("/actions/" + action.getId());
             return ResponseEntity.created(location).build();
-        } catch (IllegalArgumentException ie) {
-            return ResponseEntity.badRequest().body(ie.getMessage());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -43,15 +51,17 @@ public class ActionController {
             Action existingAction = actionService.getById(id);
 
             existingAction.setDescription(updatedAction.getDescription());
-            existingAction.setType(updatedAction.getType());
+            existingAction.setType(ActionType.tryConvert(updatedAction.getType()));
             existingAction.setLegalProcess(updatedAction.getLegalProcess());
 
             Action editedAction = actionService.save(existingAction);
 
             URI location = new URI("/actions/" + editedAction.getId());
             return ResponseEntity.ok().location(location).build();
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (URISyntaxException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -61,8 +71,8 @@ public class ActionController {
             Action toRemoveAction = actionService.getById(id);
             actionService.remove(toRemoveAction);
             return ResponseEntity.ok(toRemoveAction);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
+        } catch (NullPointerException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -71,10 +81,9 @@ public class ActionController {
         try {
             Action action = actionService.getById(id);
             return ResponseEntity.ok(action);
-        } catch (IllegalArgumentException ie) {
-            return ResponseEntity.badRequest().body(ie.getMessage());
-        }
-        catch (Exception e) {
+        }catch (IllegalArgumentException | NullPointerException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

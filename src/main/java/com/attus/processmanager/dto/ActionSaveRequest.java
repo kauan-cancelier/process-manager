@@ -10,14 +10,14 @@ public class ActionSaveRequest {
 
     private LegalProcess legalProcess;
 
-    private ActionType type;
+    private String type;
 
     private String description;
 
     public Action toModel() {
         return Action.builder()
                 .legalProcess(legalProcess)
-                .type(type)
+                .type(ActionType.tryConvert(type))
                 .description(description)
                 .build();
 

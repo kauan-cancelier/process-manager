@@ -118,7 +118,7 @@ class ActionServiceTest {
     @Test
     @DisplayName("Teste: Lança exceção quando não foi possivel extrair ação por id")
     void testThrowExceptionWhenTryExtractActionById() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> actionService.getById(-1L));
+        Assertions.assertThrows(NullPointerException.class, () -> actionService.getById(-1L));
     }
 
     @Test

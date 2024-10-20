@@ -47,6 +47,7 @@ class LegalProcessServiceTest {
     @DisplayName("Teste: Lança exceção ao tentar salvar um processo com o mesmo número")
     void testWithSameNumberSave() {
         LegalProcess legalProcess = createLegalProcess();
+        legalProcess.setId(null);
         Mockito.when(legalProcessRepository.existsByNumber(legalProcess.getNumber())).thenReturn(true);
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
@@ -87,7 +88,7 @@ class LegalProcessServiceTest {
     @Test
     @DisplayName("Teste: Lança exceção quando não foi possivel extrair processo jurídico por id")
     void testThrowExceptionWhenTryExtractActionById() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> legalProcessService.getById(-1L));
+        Assertions.assertThrows(NullPointerException.class, () -> legalProcessService.getById(-1L));
     }
 
     @Test

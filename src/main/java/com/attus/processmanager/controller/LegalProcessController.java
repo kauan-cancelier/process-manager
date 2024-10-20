@@ -11,12 +11,15 @@ import com.attus.processmanager.service.ActionService;
 import com.attus.processmanager.service.LegalProcessService;
 import com.attus.processmanager.service.StakeholderLegalProcessService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("legal-processes")
 @RequiredArgsConstructor
@@ -29,7 +32,15 @@ public class LegalProcessController {
     private final ActionService actionService;
 
     @GetMapping
-    public ResponseEntity<List<LegalProcess>> findAll(@RequestParam(required = false) LegalProcessStatus legalProcessStatus) {
+    public ResponseEntity<List<LegalProcess>> list(@RequestParam(required = false) String status) {
+        LegalProcessStatus legalProcessStatus = null;
+        if (status != null) {
+            try {
+                legalProcessStatus = LegalProcessStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                log.warn("Invalid option for process status: {}", e.getMessage());
+            }
+        }
         return ResponseEntity.ok(service.list(legalProcessStatus));
     }
 
@@ -39,9 +50,12 @@ public class LegalProcessController {
             LegalProcess legalProcess = service.save(process.toModel());
             URI location = new URI("/legal-processes/" + legalProcess.getId());
             return ResponseEntity.created(location).build();
-        } catch (IllegalArgumentException ie) {
-            return ResponseEntity.badRequest().body(ie.getMessage());
-        }catch (Exception e) {
+
+        } catch (NullPointerException | IllegalArgumentException e) {
+            log.error("Error creating LegalProcess: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (URISyntaxException e) {
+            log.error("URI Syntax Error: {}", e.getMessage());
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -51,9 +65,23 @@ public class LegalProcessController {
         try {
             LegalProcess existingProcess = service.getById(id);
 
+            LegalProcessStatus legalProcessStatus = existingProcess.getStatus();
+
             existingProcess.setDescription(updatedProcess.getDescription());
             existingProcess.setNumber(updatedProcess.getNumber());
+
+            if (updatedProcess.getStatus() != null) {
+                try {
+                    legalProcessStatus = LegalProcessStatus.valueOf(updatedProcess.getStatus().toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid option for process status: {}", e.getMessage());
+                    return ResponseEntity.badRequest().body("Invalid option for process status");
+                }
+            }
+
+            existingProcess.setStatus(legalProcessStatus);
             LegalProcess editedLegalProcess = service.save(existingProcess);
+
             URI location = new URI("/legal-processes/" + editedLegalProcess.getId());
             return ResponseEntity.ok().location(location).build();
         } catch (Exception e) {
@@ -67,8 +95,8 @@ public class LegalProcessController {
             LegalProcess toRemoveProcess = service.getById(id);
             service.remove(toRemoveProcess);
             return ResponseEntity.ok(toRemoveProcess);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
+        } catch (NullPointerException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -80,10 +108,9 @@ public class LegalProcessController {
             List<Action> actions = actionService.listBy(legalProcess);
             LegalProcessDto processDto = new LegalProcessDto(legalProcess, stakes, actions);
             return ResponseEntity.ok(processDto);
-        } catch (IllegalArgumentException ie) {
-            return ResponseEntity.badRequest().body(ie.getMessage());
-        }
-        catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -93,10 +120,8 @@ public class LegalProcessController {
         try {
             LegalProcess inactivatedProcess = service.inactivateProcess(id);
             return ResponseEntity.ok(inactivatedProcess);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
+        } catch (NullPointerException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -105,10 +130,8 @@ public class LegalProcessController {
         try {
             LegalProcess inactivatedProcess = service.activateProcess(id);
             return ResponseEntity.ok(inactivatedProcess);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
+        } catch (NullPointerException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

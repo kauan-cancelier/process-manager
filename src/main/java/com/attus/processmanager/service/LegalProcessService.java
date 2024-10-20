@@ -3,6 +3,7 @@ package com.attus.processmanager.service;
 import com.attus.processmanager.models.LegalProcess;
 import com.attus.processmanager.models.enums.LegalProcessStatus;
 import com.attus.processmanager.repository.LegalProcessRepository;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +17,18 @@ public class LegalProcessService {
     private final LegalProcessRepository legalProcessRepository;
 
     public LegalProcess save(LegalProcess process) {
-        if (legalProcessRepository.existsByNumber(process.getNumber())) {
-            throw new IllegalArgumentException("Case number already exists");
+
+        Preconditions.checkNotNull(process.getDescription(), "The description is required to save");
+        Preconditions.checkNotNull(process.getNumber(), "The number is required to save");
+
+        if (process.getId() == null) {
+            Preconditions.checkArgument(!legalProcessRepository.existsByNumber(process.getNumber()), "Case number already exists");
         }
+
         if (process.getId() == null && process.getStatus() == null) {
             process.setStatus(LegalProcessStatus.ATIVO);
         }
+
         return legalProcessRepository.save(process);
     }
 
@@ -31,9 +38,7 @@ public class LegalProcessService {
 
     public LegalProcess getById(Long id) {
         LegalProcess process = legalProcessRepository.findBy(id);
-        if (process == null) {
-            throw new IllegalArgumentException("Process not found");
-        }
+        Preconditions.checkNotNull(process, "Not found process");
         return process;
     }
 
@@ -46,13 +51,13 @@ public class LegalProcessService {
     }
 
     public LegalProcess inactivateProcess(Long id) {
-        LegalProcess process = legalProcessRepository.findBy(id);
+        LegalProcess process = getById(id);
         return changeStatus(process, LegalProcessStatus.ARQUIVADO);
 
     }
 
     public LegalProcess activateProcess(Long id) {
-        LegalProcess process = legalProcessRepository.findBy(id);
+        LegalProcess process = getById(id);
         return changeStatus(process, LegalProcessStatus.ATIVO);
     }
 

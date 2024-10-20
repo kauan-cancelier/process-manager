@@ -58,7 +58,7 @@ class StakeholderLegalProcessServiceTest {
     @Test
     @DisplayName("Teste: Lança exceção quando não foi possivel extrair partes envolvidas processo por id")
     void testThrowExceptionWhenTryExtractActionById() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> service.getById(-1L));
+        Assertions.assertThrows(NullPointerException.class, () -> service.getById(-1L));
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.attus.processmanager.models.LegalProcess;
 import com.attus.processmanager.models.Stakeholder;
 import com.attus.processmanager.models.StakeholderLegalProcess;
 import com.attus.processmanager.repository.StakeholderLegalProcessRepository;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,22 +17,24 @@ public class StakeholderLegalProcessService {
     private final StakeholderLegalProcessRepository repository;
 
     public StakeholderLegalProcess save(StakeholderLegalProcess stakeholderLegalProcess) {
-       return repository.save(stakeholderLegalProcess);
+        Preconditions.checkNotNull(stakeholderLegalProcess, "The stakeholder legal process must not be null");
+        return repository.save(stakeholderLegalProcess);
     }
 
     public void remove(StakeholderLegalProcess stakeholderLegalProcess) {
+        Preconditions.checkNotNull(stakeholderLegalProcess, "The stakeholder legal process must not be null");
         repository.delete(stakeholderLegalProcess);
     }
 
     public StakeholderLegalProcess getById(Long id) {
+        Preconditions.checkNotNull(id, "The id must not be null");
         StakeholderLegalProcess stakeholderLegalProcess = repository.findBy(id);
-        if (stakeholderLegalProcess == null) {
-            throw new IllegalArgumentException("Stakeholder legal process not found");
-        }
+        Preconditions.checkNotNull(stakeholderLegalProcess, "Stakeholder legal process not found");
         return stakeholderLegalProcess;
     }
 
     public List<Stakeholder> listBy(LegalProcess legalProcess) {
+        Preconditions.checkNotNull(legalProcess, "The legal process must not be null");
         return repository.listBy(legalProcess);
     }
 

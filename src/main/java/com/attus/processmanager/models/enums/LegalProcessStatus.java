@@ -4,5 +4,13 @@ public enum LegalProcessStatus {
     ATIVO,
     SUSPENSO,
     ARQUIVADO;
+
+    public static LegalProcessStatus tryConvert(String text) throws IllegalArgumentException {
+        try {
+            return LegalProcessStatus.valueOf(text);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid process status");
+        }
+    }
 }
 

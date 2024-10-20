@@ -32,16 +32,15 @@ public class LegalProcessController {
     private final ActionService actionService;
 
     @GetMapping
-    public ResponseEntity<List<LegalProcess>> list(@RequestParam(required = false) String status) {
-        LegalProcessStatus legalProcessStatus = null;
-        if (status != null) {
-            try {
-                legalProcessStatus = LegalProcessStatus.valueOf(status.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                log.warn("Invalid option for process status: {}", e.getMessage());
+    public ResponseEntity<Object> list(@RequestParam(required = false) String status) {
+        try {
+            if (status != null && !status.isBlank()) {
+                return ResponseEntity.ok(service.list(LegalProcessStatus.tryConvert(status)));
             }
+            return ResponseEntity.ok(service.list(null));
+        } catch (IllegalArgumentException e ) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.ok(service.list(legalProcessStatus));
     }
 
     @PostMapping
@@ -65,27 +64,21 @@ public class LegalProcessController {
         try {
             LegalProcess existingProcess = service.getById(id);
 
-            LegalProcessStatus legalProcessStatus = existingProcess.getStatus();
-
+            if (updatedProcess.getStatus() != null) {
+                existingProcess.setStatus(LegalProcessStatus.tryConvert(updatedProcess.getStatus()));
+            }
             existingProcess.setDescription(updatedProcess.getDescription());
             existingProcess.setNumber(updatedProcess.getNumber());
 
-            if (updatedProcess.getStatus() != null) {
-                try {
-                    legalProcessStatus = LegalProcessStatus.valueOf(updatedProcess.getStatus().toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    log.warn("Invalid option for process status: {}", e.getMessage());
-                    return ResponseEntity.badRequest().body("Invalid option for process status");
-                }
-            }
-
-            existingProcess.setStatus(legalProcessStatus);
             LegalProcess editedLegalProcess = service.save(existingProcess);
 
             URI location = new URI("/legal-processes/" + editedLegalProcess.getId());
             return ResponseEntity.ok().location(location).build();
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (URISyntaxException e) {
+            log.error("URI Syntax Error: {}", e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

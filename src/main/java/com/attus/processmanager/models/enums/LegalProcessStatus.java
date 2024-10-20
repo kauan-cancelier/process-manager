@@ -7,7 +7,7 @@ public enum LegalProcessStatus {
 
     public static LegalProcessStatus tryConvert(String text) throws IllegalArgumentException {
         try {
-            return LegalProcessStatus.valueOf(text);
+            return LegalProcessStatus.valueOf(text.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid process status");
         }

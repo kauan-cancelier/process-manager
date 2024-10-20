@@ -1,6 +1,5 @@
 package com.attus.processmanager.dto;
 
-import com.attus.processmanager.models.enums.LegalProcessStatus;
 import lombok.Data;
 
 @Data

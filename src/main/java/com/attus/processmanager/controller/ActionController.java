@@ -83,7 +83,7 @@ public class ActionController {
         try {
             Action action = actionService.getById(id);
             return ResponseEntity.ok(action);
-        }catch (IllegalArgumentException | NullPointerException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

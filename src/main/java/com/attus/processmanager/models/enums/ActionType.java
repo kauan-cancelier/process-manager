@@ -7,7 +7,7 @@ public enum ActionType {
 
     public static ActionType tryConvert(String text) throws IllegalArgumentException {
         try {
-            return ActionType.valueOf(text);
+            return ActionType.valueOf(text.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid action type");
         }

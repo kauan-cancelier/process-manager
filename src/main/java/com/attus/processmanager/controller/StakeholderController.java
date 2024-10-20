@@ -1,6 +1,7 @@
 package com.attus.processmanager.controller;
 
 import com.attus.processmanager.dto.StakeholderSaveRequest;
+import com.attus.processmanager.dto.StakeholderUpdateRequest;
 import com.attus.processmanager.models.Stakeholder;
 import com.attus.processmanager.models.enums.StakeholderType;
 import com.attus.processmanager.service.StakeholderService;
@@ -9,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
+import java.net.URISyntaxException;
 
 @RestController
 @RequestMapping("stakeholders")
@@ -19,8 +20,16 @@ public class StakeholderController {
     private final StakeholderService stakeholderService;
 
     @GetMapping
-    public ResponseEntity<List<Stakeholder>> findAll(@RequestParam(required = false) StakeholderType type) {
-        return ResponseEntity.ok(stakeholderService.list(type));
+    public ResponseEntity<Object> findAll(@RequestParam(required = false) String type) {
+        try {
+            if (type != null && !type.isBlank()) {
+                return ResponseEntity.ok(stakeholderService.list(StakeholderType.tryConvert(type)));
+            }
+            return ResponseEntity.ok(stakeholderService.list(null));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping
@@ -29,23 +38,27 @@ public class StakeholderController {
             Stakeholder stakeholder = stakeholderService.save(stakeholderSaveRequest.toModel());
             URI location = new URI("/stakeholders/" + stakeholder.getId());
             return ResponseEntity.created(location).build();
-        } catch (IllegalArgumentException ie) {
-            return ResponseEntity.badRequest().body(ie.getMessage());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable("id") Long id, @RequestBody Stakeholder updatedStakeholder) {
+    public ResponseEntity<Object> update(@PathVariable("id") Long id, @RequestBody StakeholderUpdateRequest updatedStakeholder) {
         try {
             Stakeholder existingStakeholder = stakeholderService.getById(id);
-            updatedStakeholder.setId(existingStakeholder.getId());
-            Stakeholder editedStakeholder = stakeholderService.save(updatedStakeholder);
+            existingStakeholder = updatedStakeholder.updateModel(existingStakeholder);
+
+            Stakeholder editedStakeholder = stakeholderService.save(existingStakeholder);
+
             URI location = new URI("/stakeholders/" + editedStakeholder.getId());
             return ResponseEntity.ok().location(location).build();
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (URISyntaxException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -55,7 +68,7 @@ public class StakeholderController {
             Stakeholder toRemoveStakeholder = stakeholderService.getById(id);
             stakeholderService.remove(toRemoveStakeholder);
             return ResponseEntity.ok(toRemoveStakeholder);
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -65,10 +78,9 @@ public class StakeholderController {
         try {
             Stakeholder stakeholder = stakeholderService.getById(id);
             return ResponseEntity.ok(stakeholder);
-        } catch (IllegalArgumentException ie) {
-            return ResponseEntity.badRequest().body(ie.getMessage());
-        }
-        catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

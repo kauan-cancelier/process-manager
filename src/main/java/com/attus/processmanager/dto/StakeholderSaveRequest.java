@@ -13,7 +13,7 @@ public class StakeholderSaveRequest {
 
     private String cnpj;
 
-    private StakeholderType type;
+    private String type;
 
     private String email;
 
@@ -24,7 +24,7 @@ public class StakeholderSaveRequest {
                 .name(name)
                 .cpf(cpf)
                 .cnpj(cnpj)
-                .type(type)
+                .type(StakeholderType.tryConvert(type))
                 .email(email)
                 .phone(phone)
                 .build();

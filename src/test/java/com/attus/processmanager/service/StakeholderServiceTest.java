@@ -59,7 +59,7 @@ class StakeholderServiceTest {
     @Test
     @DisplayName("Teste: Lança exceção ao buscar parte interessada por id inválido")
     void getByNonExistId() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> stakeholderService.getById(-1L));
+        Assertions.assertThrows(NullPointerException.class, () -> stakeholderService.getById(-1L));
     }
 
     @Test
@@ -86,6 +86,7 @@ class StakeholderServiceTest {
         return Stakeholder.builder()
                 .id(1L)
                 .email("test@tes.com")
+                .cpf("12346578")
                 .phone("48484848")
                 .type(StakeholderType.AUTOR)
                 .build();

@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @WebMvcTest(controllers = StakeholderController.class)
-class StakeHolderControllerTest {
+class StakeholderControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

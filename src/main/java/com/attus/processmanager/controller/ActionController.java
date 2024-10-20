@@ -51,7 +51,9 @@ public class ActionController {
             Action existingAction = actionService.getById(id);
 
             existingAction.setDescription(updatedAction.getDescription());
-            existingAction.setType(ActionType.tryConvert(updatedAction.getType()));
+            if (updatedAction.getType() != null) {
+                existingAction.setType(ActionType.tryConvert(updatedAction.getType()));
+            }
             existingAction.setLegalProcess(updatedAction.getLegalProcess());
 
             Action editedAction = actionService.save(existingAction);

@@ -5,7 +5,7 @@ public enum ActionType {
     AUDIENCIA,
     SENTENCA;
 
-    public static ActionType tryConvert(String text) {
+    public static ActionType tryConvert(String text) throws IllegalArgumentException {
         try {
             return ActionType.valueOf(text);
         } catch (IllegalArgumentException e) {

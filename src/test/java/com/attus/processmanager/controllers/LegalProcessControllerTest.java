@@ -8,7 +8,6 @@ import com.attus.processmanager.models.enums.LegalProcessStatus;
 import com.attus.processmanager.service.ActionService;
 import com.attus.processmanager.service.LegalProcessService;
 import com.attus.processmanager.service.StakeholderLegalProcessService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;

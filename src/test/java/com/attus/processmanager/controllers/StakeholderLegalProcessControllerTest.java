@@ -82,13 +82,13 @@ class StakeholderLegalProcessControllerTest {
 
     @Test
     void testIllegalCreate() throws Exception {
-        StakeholderLegalProcess stakeholderLegalProcess = new StakeholderLegalProcess();
+        StakeholderLegalProcess stake = new StakeholderLegalProcess();
 
-        Mockito.when(service.save(stakeholderLegalProcess)).thenThrow(new IllegalArgumentException());
+        Mockito.when(service.save(stake)).thenThrow(new IllegalArgumentException());
 
         mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(stakeholderLegalProcess)))
+                        .content(objectMapper.writeValueAsString(stake)))
                         .andExpect(status().isBadRequest());
     }
 

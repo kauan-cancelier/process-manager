@@ -6,12 +6,10 @@ import com.attus.processmanager.dto.StakeholderUpdateRequest;
 import com.attus.processmanager.models.Stakeholder;
 import com.attus.processmanager.models.enums.StakeholderType;
 import com.attus.processmanager.service.StakeholderService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -77,7 +74,7 @@ class StakeholderControllerTest {
     }
 
     @Test
-    public void testReturnBadRequestWhenCpfAndCnpjAreBothProvided() throws Exception {
+    void testReturnBadRequestWhenCpfAndCnpjAreBothProvided() throws Exception {
         StakeholderSaveRequest stakeholderRequest = new StakeholderSaveRequest();
         stakeholderRequest.setCpf("12345678901");
         stakeholderRequest.setCnpj("12345678000199");

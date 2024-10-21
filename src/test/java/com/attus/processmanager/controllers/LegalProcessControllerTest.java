@@ -1,11 +1,14 @@
 package com.attus.processmanager.controllers;
 
 import com.attus.processmanager.controller.LegalProcessController;
+import com.attus.processmanager.dto.ActionUpdateRequest;
+import com.attus.processmanager.dto.LegalProcessUpdateRequest;
 import com.attus.processmanager.models.LegalProcess;
 import com.attus.processmanager.models.enums.LegalProcessStatus;
 import com.attus.processmanager.service.ActionService;
 import com.attus.processmanager.service.LegalProcessService;
 import com.attus.processmanager.service.StakeholderLegalProcessService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,11 +73,14 @@ class LegalProcessControllerTest {
 
     @Test
     void testUpdate() throws Exception {
-        LegalProcess updatedLegalProcess = createLegalProcess();
+        LegalProcessUpdateRequest updatedLegalProcess = new LegalProcessUpdateRequest();
+        updatedLegalProcess.setStatus("ATIVO");
+        updatedLegalProcess.setId(1L);
         updatedLegalProcess.setDescription("Updated Legal Process");
+        updatedLegalProcess.setNumber(123L);
 
         Mockito.when(service.getById(legalProcess.getId())).thenReturn(legalProcess);
-        Mockito.when(service.save(Mockito.any(LegalProcess.class))).thenReturn(updatedLegalProcess);
+        Mockito.when(service.save(Mockito.any(LegalProcess.class))).thenReturn(legalProcess);
 
         mockMvc.perform(put(URL + "/" + legalProcess.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -82,6 +88,34 @@ class LegalProcessControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void testUpdateProcessNotFound() throws Exception {
+        ActionUpdateRequest updateRequest = new ActionUpdateRequest();
+
+        Mockito.when(service.getById(1L)).thenThrow(new NullPointerException());
+
+        mockMvc.perform(put(URL + "/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testUpdateWithInvalidType() throws Exception {
+        LegalProcessUpdateRequest updatedLegalProcess = new LegalProcessUpdateRequest();
+        updatedLegalProcess.setStatus("INVALID_STATUS");
+        updatedLegalProcess.setId(1L);
+        updatedLegalProcess.setDescription("Updated Legal Process");
+        updatedLegalProcess.setNumber(123L);
+
+        Mockito.when(service.getById(legalProcess.getId())).thenReturn(legalProcess);
+        Mockito.when(service.save(Mockito.any(LegalProcess.class))).thenReturn(createLegalProcess());
+
+        mockMvc.perform(put(URL + "/" + legalProcess.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedLegalProcess)))
+                .andExpect(status().isBadRequest());
+    }
 
     @Test
     void testInsertSameLegalProcessNumber() throws Exception {
@@ -109,25 +143,45 @@ class LegalProcessControllerTest {
     }
 
     @Test
-    void testFindAll() throws Exception {
-        Mockito.when(service.list(LegalProcessStatus.ATIVO)).thenReturn(Collections.singletonList(legalProcess));
-        mockMvc.perform(get(URL))
-                .andExpect(status().isOk())
-                .andReturn();
+    void testDeleteWithInvalidId() throws Exception {
+        Mockito.doThrow(new NullPointerException()).when(service).remove(null);
+
+        mockMvc.perform(delete(URL + "/" + -1L))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void testFindByStatusAtivo() throws Exception {
+    void testListByStatus() throws Exception {
         Mockito.when(service.list(LegalProcessStatus.ATIVO)).thenReturn(Collections.singletonList(legalProcess));
-        mockMvc.perform(get(URL + "?legalProcessStatus=", LegalProcessStatus.ATIVO))
+        mockMvc.perform(get(URL + "?status=ATIVO", LegalProcessStatus.ATIVO))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void testListWithNullType() throws Exception {
+        Mockito.when(service.list(legalProcess.getStatus())).thenReturn(Collections.singletonList(legalProcess));
+        mockMvc.perform(get(URL)).andExpect(status().isOk());
+    }
+
+    @Test
+    void testListWithInvalidType() throws Exception {
+        Mockito.when(service.list(legalProcess.getStatus())).thenReturn(Collections.singletonList(legalProcess));
+        mockMvc.perform(get(URL + "?status=INVALID_TYPE")).andExpect(status().isBadRequest());
     }
 
     @Test
     void testInactivateProcess() throws Exception {
         Mockito.when(service.inactivateProcess(legalProcess.getId())).thenReturn(legalProcess);
-        mockMvc.perform(put(URL + "/" +legalProcess.getId() + "/inactivate"))
+        mockMvc.perform(put(URL + "/" + legalProcess.getId() + "/inactivate"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void testInactivateProcessWithInvalidId() throws Exception {
+        Long processId = 1L;
+        Mockito.when(service.inactivateProcess(processId)).thenThrow(new NullPointerException());
+        mockMvc.perform(put(URL + "/" + processId + "/inactivate"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -138,10 +192,25 @@ class LegalProcessControllerTest {
     }
 
     @Test
+    void testActivateProcessWithNotFound() throws Exception {
+        Long processId = 1L;
+        Mockito.when(service.activateProcess(processId)).thenThrow(new NullPointerException());
+        mockMvc.perform(put(URL + "/" + processId + "/activate"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void testGetById() throws Exception {
         Mockito.when(service.getById(legalProcess.getId())).thenReturn(legalProcess);
         mockMvc.perform(get(URL + "/" + legalProcess.getId()))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void testFindByInvalidId() throws Exception {
+        Mockito.when(service.getById(-1L)).thenThrow(NullPointerException.class);
+        mockMvc.perform(get(URL + "/" + -1L))
+                .andExpect(status().isBadRequest());
     }
 
 }

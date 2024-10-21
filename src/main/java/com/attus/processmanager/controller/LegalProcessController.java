@@ -90,8 +90,6 @@ public class LegalProcessController {
             return ResponseEntity.ok(processDto);
         } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

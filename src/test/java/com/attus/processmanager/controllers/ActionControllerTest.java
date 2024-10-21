@@ -1,6 +1,9 @@
 package com.attus.processmanager.controllers;
 
 import com.attus.processmanager.controller.ActionController;
+import com.attus.processmanager.dto.ActionSaveRequest;
+import com.attus.processmanager.dto.ActionUpdateRequest;
+import com.attus.processmanager.dto.StakeholderUpdateRequest;
 import com.attus.processmanager.models.Action;
 import com.attus.processmanager.models.LegalProcess;
 import com.attus.processmanager.models.enums.ActionType;
@@ -73,6 +76,27 @@ class ActionControllerTest {
     }
 
     @Test
+    void testBadRequestWhenCreate() throws Exception {
+        Mockito.when(service.save(null)).thenThrow(new NullPointerException());
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(null)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testIllegalCreate() throws Exception {
+        ActionSaveRequest actionSaveRequest = new ActionSaveRequest();
+        Mockito.when(service.save(null)).thenThrow(new IllegalArgumentException());
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(actionSaveRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void testUpdate() throws Exception {
         Action updatedAction = createAction();
         updatedAction.setType(ActionType.PETICAO);
@@ -87,10 +111,42 @@ class ActionControllerTest {
     }
 
     @Test
+    void testUpdateWithInvalidId() throws Exception {
+        StakeholderUpdateRequest updateRequest = new StakeholderUpdateRequest();
+
+        Mockito.when(service.getById(-1L)).thenThrow(new IllegalArgumentException());
+
+        mockMvc.perform(put(URL + "/" + -1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testUpdateActionNotFound() throws Exception {
+        ActionUpdateRequest updateRequest = new ActionUpdateRequest();
+
+        Mockito.when(service.getById(1L)).thenThrow(new NullPointerException());
+
+        mockMvc.perform(put(URL + "/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void testDelete() throws Exception {
         Mockito.doNothing().when(service).remove(action);
         mockMvc.perform(delete(URL + "/" + action.getId()))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void testDeleteWithInvalidId() throws Exception {
+        Mockito.doThrow(new NullPointerException()).when(service).remove(null);
+
+        mockMvc.perform(delete(URL + "/" + -1L))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -101,9 +157,28 @@ class ActionControllerTest {
     }
 
     @Test
+    void testFindByInvalidId() throws Exception {
+        Mockito.when(service.getById(-1L)).thenThrow(NullPointerException.class);
+        mockMvc.perform(get(URL + "/" + -1L))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void testList() throws Exception {
         Mockito.when(service.list(action.getType())).thenReturn(Collections.singletonList(action));
         mockMvc.perform(get(URL + "?type=" + action.getType())).andExpect(status().isOk());
+    }
+
+    @Test
+    void testListWithNullType() throws Exception {
+        Mockito.when(service.list(action.getType())).thenReturn(Collections.singletonList(action));
+        mockMvc.perform(get(URL)).andExpect(status().isOk());
+    }
+
+    @Test
+    void testListWithInvalidType() throws Exception {
+        Mockito.when(service.list(action.getType())).thenReturn(Collections.singletonList(action));
+        mockMvc.perform(get(URL + "?type=INVALID_TYPE")).andExpect(status().isBadRequest());
     }
 
 }

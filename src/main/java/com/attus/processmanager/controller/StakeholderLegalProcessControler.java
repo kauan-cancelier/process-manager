@@ -19,12 +19,9 @@ public class StakeholderLegalProcessControler {
     public ResponseEntity<Object> create(@RequestBody StakeholderLegalProcess stakeholderLegalProcess) {
         try {
             StakeholderLegalProcess savedStake = service.save(stakeholderLegalProcess);
-            URI location = new URI("/stakeholders-legal-process/" + savedStake.getId());
-            return ResponseEntity.created(location).build();
+            return ResponseEntity.status(201).body(savedStake);
         } catch (IllegalArgumentException ie) {
             return ResponseEntity.badRequest().body(ie.getMessage());
-        }catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

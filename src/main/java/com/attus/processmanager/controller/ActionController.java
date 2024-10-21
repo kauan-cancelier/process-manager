@@ -9,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 @RestController
 @RequestMapping("actions")
 @RequiredArgsConstructor
@@ -36,12 +33,9 @@ public class ActionController {
     public ResponseEntity<Object> create(@RequestBody ActionSaveRequest actionSaveRequest) {
         try {
             Action action = actionService.save(actionSaveRequest.toModel());
-            URI location = new URI("/actions/" + action.getId());
-            return ResponseEntity.created(location).build();
+            return ResponseEntity.status(201).body(action);
         } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        }catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -58,12 +52,9 @@ public class ActionController {
 
             Action editedAction = actionService.save(existingAction);
 
-            URI location = new URI("/actions/" + editedAction.getId());
-            return ResponseEntity.ok().location(location).build();
+            return ResponseEntity.ok().body(editedAction);
         } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (URISyntaxException e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -85,8 +76,6 @@ public class ActionController {
             return ResponseEntity.ok(action);
         } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

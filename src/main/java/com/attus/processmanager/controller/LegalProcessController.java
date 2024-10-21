@@ -14,9 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 @Slf4j
@@ -44,23 +41,17 @@ public class LegalProcessController {
     }
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody LegalProcessSaveRequest process) {
+    public ResponseEntity<Object> create(@RequestBody LegalProcessSaveRequest process) {
         try {
             LegalProcess legalProcess = service.save(process.toModel());
-            URI location = new URI("/legal-processes/" + legalProcess.getId());
-            return ResponseEntity.created(location).build();
-
+            return ResponseEntity.status(201).body(legalProcess);
         } catch (NullPointerException | IllegalArgumentException e) {
-            log.error("Error creating LegalProcess: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (URISyntaxException e) {
-            log.error("URI Syntax Error: {}", e.getMessage());
-            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable("id") Long id, @RequestBody LegalProcessUpdateRequest updatedProcess) {
+    public ResponseEntity<Object> update(@PathVariable("id") Long id, @RequestBody LegalProcessUpdateRequest updatedProcess) {
         try {
             LegalProcess existingProcess = service.getById(id);
 
@@ -72,13 +63,9 @@ public class LegalProcessController {
 
             LegalProcess editedLegalProcess = service.save(existingProcess);
 
-            URI location = new URI("/legal-processes/" + editedLegalProcess.getId());
-            return ResponseEntity.ok().location(location).build();
+            return ResponseEntity.ok().body(editedLegalProcess);
         } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (URISyntaxException e) {
-            log.error("URI Syntax Error: {}", e.getMessage());
-            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

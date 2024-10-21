@@ -9,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 @RestController
 @RequestMapping("stakeholders")
 @RequiredArgsConstructor
@@ -36,12 +33,9 @@ public class StakeholderController {
     public ResponseEntity<Object> create(@RequestBody StakeholderSaveRequest stakeholderSaveRequest) {
         try {
             Stakeholder stakeholder = stakeholderService.save(stakeholderSaveRequest.toModel());
-            URI location = new URI("/stakeholders/" + stakeholder.getId());
-            return ResponseEntity.created(location).build();
+            return ResponseEntity.status(201).body(stakeholder);
         } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        }catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -50,15 +44,11 @@ public class StakeholderController {
         try {
             Stakeholder existingStakeholder = stakeholderService.getById(id);
             existingStakeholder = updatedStakeholder.updateModel(existingStakeholder);
-
             Stakeholder editedStakeholder = stakeholderService.save(existingStakeholder);
 
-            URI location = new URI("/stakeholders/" + editedStakeholder.getId());
-            return ResponseEntity.ok().location(location).build();
+            return ResponseEntity.ok().body(editedStakeholder);
         } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (URISyntaxException e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -69,7 +59,7 @@ public class StakeholderController {
             stakeholderService.remove(toRemoveStakeholder);
             return ResponseEntity.ok(toRemoveStakeholder);
         } catch (NullPointerException e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -80,8 +70,6 @@ public class StakeholderController {
             return ResponseEntity.ok(stakeholder);
         } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
     

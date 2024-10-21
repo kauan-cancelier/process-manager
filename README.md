@@ -33,7 +33,9 @@ Foi utilizado o Jacoco para realizar a análise de cobertura de testes do sistem
 mvn test
 ```
 
-Os relatórios serão gerados na pasta target/site/jacoco.
+Os relatórios serão gerados na pasta ````target/site/jacoco````
+
+Caso prefira abrir na web, nessa mesma pasta a um arquivo ```index.html``` que pode ser aberto por um navegador (esse não é acessivel por rotas)
 
 ### Análise de Qualidade de Código
 A análise de qualidade de código é feita utilizando o SonarQube. Para executar a análise localmente, utilize os seguintes comandos:
@@ -77,3 +79,6 @@ Para executar os testes unitários, utilize o comando:
 ```
 mvn test
 ```
+
+#### Swagger
+Para acessar o swagger você pode executar a aplicação e acessar a rota ``` url_configurada/swagger-ui/index.html ```

@@ -38,6 +38,22 @@ class StakeholderServiceTest {
     }
 
     @Test
+    @DisplayName("Teste: Lança exceção ao tentar salvar com CPF e CNPJ")
+    void testSaveWithCpfAndCnpj() {
+        Stakeholder stakeholder = createStakeholder();
+        stakeholder.setCnpj("12345678910");
+        stakeholder.setCpf("12345678910");
+
+        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            stakeholderService.save(stakeholder);
+        });
+
+        Assertions.assertEquals("The CPF and CNPJ cannot be provided together.", exception.getMessage());
+    }
+
+
+
+    @Test
     @DisplayName("Teste: Remover parte interessada")
     void remove() {
         Stakeholder stakeholder = createStakeholder();

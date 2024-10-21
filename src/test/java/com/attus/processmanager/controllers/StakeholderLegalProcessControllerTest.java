@@ -81,11 +81,41 @@ class StakeholderLegalProcessControllerTest {
     }
 
     @Test
+    void testIllegalCreate() throws Exception {
+        StakeholderLegalProcess stakeholderLegalProcess = new StakeholderLegalProcess();
+
+        Mockito.when(service.save(stakeholderLegalProcess)).thenThrow(new IllegalArgumentException());
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(stakeholderLegalProcess)))
+                        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testBadRequestWhenCreate() throws Exception {
+        Mockito.when(service.save(null)).thenThrow(new NullPointerException());
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(null)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void testDelete() throws Exception {
         Mockito.doNothing().when(service).remove(stakeholderLegalProcess);
         mockMvc.perform(delete(URL + "/" + stakeholderLegalProcess.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
+    }
+
+    @Test
+    void testDeleteWithInvalidId() throws Exception {
+        Mockito.doThrow(new NullPointerException()).when(service).remove(null);
+
+        mockMvc.perform(delete(URL + "/" + -1L))
+                .andExpect(status().isBadRequest());
     }
 
 }

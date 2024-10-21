@@ -11,4 +11,9 @@ class LegalProcessManagerApplicationTests {
 		// Noncompliant - method is empty
 	}
 
+	@Test
+	void main() {
+		ProcessManagerApplication.main(new String[] {});
+	}
+
 }

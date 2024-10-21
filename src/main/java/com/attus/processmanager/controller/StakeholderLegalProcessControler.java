@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
 @RestController
 @RequestMapping("stakeholders-legal-process")
 @RequiredArgsConstructor
@@ -20,8 +18,8 @@ public class StakeholderLegalProcessControler {
         try {
             StakeholderLegalProcess savedStake = service.save(stakeholderLegalProcess);
             return ResponseEntity.status(201).body(savedStake);
-        } catch (IllegalArgumentException ie) {
-            return ResponseEntity.badRequest().body(ie.getMessage());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -31,8 +29,8 @@ public class StakeholderLegalProcessControler {
             StakeholderLegalProcess toRemoveStake = service.getById(id);
             service.remove(toRemoveStake);
             return ResponseEntity.ok(toRemoveStake);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
+        } catch (NullPointerException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

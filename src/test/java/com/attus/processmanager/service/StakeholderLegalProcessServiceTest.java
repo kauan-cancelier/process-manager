@@ -4,7 +4,9 @@ import com.attus.processmanager.models.LegalProcess;
 import com.attus.processmanager.models.Stakeholder;
 import com.attus.processmanager.models.StakeholderLegalProcess;
 import com.attus.processmanager.models.enums.StakeholderType;
+import com.attus.processmanager.repository.ActionRepository;
 import com.attus.processmanager.repository.StakeholderLegalProcessRepository;
+import com.attus.processmanager.repository.StakeholderRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,12 @@ class StakeholderLegalProcessServiceTest {
 
     @Mock
     private StakeholderLegalProcessRepository repository;
+
+    @Mock
+    private StakeholderService stakeholderService;
+
+    @Mock
+    private ActionService actionService;
 
 
     @Test

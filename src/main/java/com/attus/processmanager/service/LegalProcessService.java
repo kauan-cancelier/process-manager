@@ -5,6 +5,7 @@ import com.attus.processmanager.models.enums.LegalProcessStatus;
 import com.attus.processmanager.repository.LegalProcessRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class LegalProcessService {
         legalProcessRepository.delete(process);
     }
 
+    @Cacheable(value = "getLegalProcessById", key = "#id")
     public LegalProcess getById(Long id) {
         LegalProcess process = legalProcessRepository.findBy(id);
         Preconditions.checkNotNull(process, "Not found process");

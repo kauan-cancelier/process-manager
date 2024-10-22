@@ -6,6 +6,7 @@ import com.attus.processmanager.models.StakeholderLegalProcess;
 import com.attus.processmanager.repository.StakeholderLegalProcessRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,6 +44,7 @@ public class StakeholderLegalProcessService {
         return stakeholderLegalProcess;
     }
 
+    @Cacheable(value = "listStakeholdersByLegalProcess", key = "#legalProcess.id")
     public List<Stakeholder> listBy(LegalProcess legalProcess) {
         Preconditions.checkNotNull(legalProcess, "The legal process must not be null");
         return repository.listBy(legalProcess);

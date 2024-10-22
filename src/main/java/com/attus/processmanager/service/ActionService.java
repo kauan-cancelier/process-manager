@@ -6,6 +6,7 @@ import com.attus.processmanager.models.enums.ActionType;
 import com.attus.processmanager.repository.ActionRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -52,6 +53,7 @@ public class ActionService {
         return actionRepository.listBy(type);
     }
 
+    @Cacheable(value = "listActionsByLegalProcess", key = "#legalProcess.id")
     public List<Action> listBy(LegalProcess legalProcess) {
         Preconditions.checkNotNull(legalProcess, "Legal process must not be null");
         return actionRepository.findBy(legalProcess);

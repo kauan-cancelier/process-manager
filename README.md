@@ -21,7 +21,7 @@ O projeto segue uma arquitetura de microsserviços, onde um único serviço é r
 ### Tecnologias Utilizadas
 * Java 17 com Spring Boot: Base do microsserviço.
 * Spring Data JPA: Interação com o banco de dados.
-* Banco de Dados: PostgreSQL ou MySQL para a persistência dos dados.
+* Banco de Dados: PostgreSQ.
 * Jacoco: Ferramenta para cobertura de testes.
 * SonarQube: Para análise de qualidade do código.
 

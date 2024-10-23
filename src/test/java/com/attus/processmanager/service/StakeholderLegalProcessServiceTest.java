@@ -5,6 +5,7 @@ import com.attus.processmanager.models.Stakeholder;
 import com.attus.processmanager.models.StakeholderLegalProcess;
 import com.attus.processmanager.models.enums.StakeholderType;
 import com.attus.processmanager.repository.StakeholderLegalProcessRepository;
+import com.attus.processmanager.repository.StakeholderRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class StakeholderLegalProcessServiceTest {
     private StakeholderService stakeholderService;
 
     @Mock
+    private StakeholderRepository stakeholderRepository;
+
+    @Mock
     private ActionService actionService;
 
 
@@ -41,6 +45,15 @@ class StakeholderLegalProcessServiceTest {
         StakeholderLegalProcess savedStakeholderProcess = service.save(stakeholderLegalProcess);
         Assertions.assertNotNull(savedStakeholderProcess);
         Mockito.verify(repository).save(savedStakeholderProcess);
+    }
+
+    @Test
+    @DisplayName("Teste: Lança exceção quando stakeholder legal process é null")
+    void testSaveThrowsExceptionForNullStakeholderLegalProcess() {
+        NullPointerException exception = Assertions.assertThrows(NullPointerException.class, () -> {
+            service.save(null);
+        });
+        Assertions.assertEquals("The stakeholder legal process must not be null", exception.getMessage());
     }
 
     @Test
@@ -79,6 +92,16 @@ class StakeholderLegalProcessServiceTest {
 
         Assertions.assertEquals(1, list.size());
         Assertions.assertEquals(stakeholder, list.get(0));
+    }
+
+    @Test
+    @DisplayName("Teste: Lançar exceção ao tentar listar processos legais com stakeholder nulo")
+    void testListByStakeholderNull() {
+        Stakeholder stakeholder = null;
+        NullPointerException ex = Assertions.assertThrows(NullPointerException.class, () -> {
+            service.listBy(stakeholder);
+        });
+        Assertions.assertEquals("The stakeholder must not be null", ex.getMessage());
     }
 
 

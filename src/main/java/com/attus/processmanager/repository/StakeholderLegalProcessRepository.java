@@ -20,5 +20,10 @@ public interface StakeholderLegalProcessRepository extends JpaRepository<Stakeho
     List<Stakeholder> listBy(LegalProcess legalProcess);
 
 
+    @Query("SELECT COUNT(s) > 0 " +
+            "FROM StakeholderLegalProcess s " +
+            "WHERE s.stakeholder = :stakeholder " +
+            "AND s.legalProcess = :legalProcess")
+    boolean checkIfExists(Stakeholder stakeholder, LegalProcess legalProcess);
 }
 

@@ -19,16 +19,14 @@ public class StakeholderLegalProcessService {
 
     private final StakeholderService stakeholderService;
 
-    private final ActionService actionService;
-
     public StakeholderLegalProcess save(StakeholderLegalProcess stakeholderLegalProcess) {
         Preconditions.checkNotNull(stakeholderLegalProcess, "The stakeholder legal process must not be null");
         Preconditions.checkNotNull(stakeholderLegalProcess.getLegalProcess(), "The legal process must not be null");
         Preconditions.checkNotNull(stakeholderLegalProcess.getStakeholder(), "The stakeholder must not be null");
-
-        stakeholderService.getById(stakeholderLegalProcess.getStakeholder().getId());
-        actionService.getById(stakeholderLegalProcess.getLegalProcess().getId());
-
+        Stakeholder stakeholder = stakeholderService.getById(stakeholderLegalProcess.getStakeholder().getId());
+        if (repository.checkIfExists(stakeholder, stakeholderLegalProcess.getLegalProcess())) {
+            throw new IllegalArgumentException("Stakeholder already associated with this legal process");
+        }
         return repository.save(stakeholderLegalProcess);
     }
 

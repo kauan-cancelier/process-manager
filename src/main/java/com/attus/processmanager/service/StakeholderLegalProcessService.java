@@ -19,14 +19,10 @@ public class StakeholderLegalProcessService {
 
     private final StakeholderService stakeholderService;
 
+    private final LegalProcessService legalProcessService;
+
     public StakeholderLegalProcess save(StakeholderLegalProcess stakeholderLegalProcess) {
-        Preconditions.checkNotNull(stakeholderLegalProcess, "The stakeholder legal process must not be null");
-        Preconditions.checkNotNull(stakeholderLegalProcess.getLegalProcess(), "The legal process must not be null");
-        Preconditions.checkNotNull(stakeholderLegalProcess.getStakeholder(), "The stakeholder must not be null");
-        Stakeholder stakeholder = stakeholderService.getById(stakeholderLegalProcess.getStakeholder().getId());
-        if (repository.checkIfExists(stakeholder, stakeholderLegalProcess.getLegalProcess())) {
-            throw new IllegalArgumentException("Stakeholder already associated with this legal process");
-        }
+       validate(stakeholderLegalProcess);
         return repository.save(stakeholderLegalProcess);
     }
 
@@ -53,5 +49,17 @@ public class StakeholderLegalProcessService {
         Preconditions.checkNotNull(stakeholder, "The stakeholder must not be null");
         return repository.listBy(stakeholder);
     }
+
+    private void validate(StakeholderLegalProcess stakeholderLegalProcess) {
+        Preconditions.checkNotNull(stakeholderLegalProcess, "The stakeholder legal process must not be null");
+        Preconditions.checkNotNull(stakeholderLegalProcess.getLegalProcess(), "The legal process must not be null");
+        Preconditions.checkNotNull(stakeholderLegalProcess.getStakeholder(), "The stakeholder must not be null");
+        legalProcessService.getById(stakeholderLegalProcess.getLegalProcess().getId());
+        Stakeholder stakeholder = stakeholderService.getById(stakeholderLegalProcess.getStakeholder().getId());
+        if (repository.checkIfExists(stakeholder, stakeholderLegalProcess.getLegalProcess())) {
+            throw new IllegalArgumentException("Stakeholder already associated with this legal process");
+        }
+    }
+
 
 }

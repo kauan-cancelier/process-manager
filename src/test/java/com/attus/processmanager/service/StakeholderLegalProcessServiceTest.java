@@ -25,6 +25,9 @@ class StakeholderLegalProcessServiceTest {
     private StakeholderLegalProcessService service;
 
     @Mock
+    private LegalProcessService legalProcessService;
+
+    @Mock
     private StakeholderLegalProcessRepository repository;
 
     @Mock

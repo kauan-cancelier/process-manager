@@ -1,5 +1,6 @@
 package com.attus.processmanager.controller;
 
+import com.attus.processmanager.dto.ActionRepresentation;
 import com.attus.processmanager.dto.ActionSaveRequest;
 import com.attus.processmanager.dto.ActionUpdateRequest;
 import com.attus.processmanager.models.Action;
@@ -44,16 +45,13 @@ public class ActionController {
     public ResponseEntity<Object> update(@PathVariable("id") Long id, @RequestBody ActionUpdateRequest updatedAction) {
         try {
             Action existingAction = actionService.getById(id);
-
             existingAction.setDescription(updatedAction.getDescription());
             if (updatedAction.getType() != null) {
                 existingAction.setType(ActionType.tryConvert(updatedAction.getType()));
             }
             existingAction.setLegalProcess(updatedAction.getLegalProcess());
-
             Action editedAction = actionService.save(existingAction);
-
-            return ResponseEntity.ok().body(editedAction);
+            return ResponseEntity.ok().body(ActionRepresentation.fromModel(editedAction));
         } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

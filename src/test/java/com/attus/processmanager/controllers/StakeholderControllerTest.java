@@ -5,6 +5,7 @@ import com.attus.processmanager.dto.StakeholderSaveRequest;
 import com.attus.processmanager.dto.StakeholderUpdateRequest;
 import com.attus.processmanager.models.Stakeholder;
 import com.attus.processmanager.models.enums.StakeholderType;
+import com.attus.processmanager.service.StakeholderLegalProcessService;
 import com.attus.processmanager.service.StakeholderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,9 @@ class StakeholderControllerTest {
 
     @MockBean
     private StakeholderService service;
+
+    @MockBean
+    private StakeholderLegalProcessService stakeholderLegalProcessService;
 
     private static final String URL = "/stakeholders";
 

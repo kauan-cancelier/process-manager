@@ -49,4 +49,9 @@ public class StakeholderLegalProcessService {
     }
 
 
+    public List<LegalProcess> listBy(Stakeholder stakeholder) {
+        Preconditions.checkNotNull(stakeholder, "The stakeholder must not be null");
+        return repository.listBy(stakeholder);
+    }
+
 }

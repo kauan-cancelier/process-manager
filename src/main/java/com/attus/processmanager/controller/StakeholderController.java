@@ -1,13 +1,18 @@
 package com.attus.processmanager.controller;
 
+import com.attus.processmanager.dto.StakeholderRepresentation;
 import com.attus.processmanager.dto.StakeholderSaveRequest;
 import com.attus.processmanager.dto.StakeholderUpdateRequest;
+import com.attus.processmanager.models.LegalProcess;
 import com.attus.processmanager.models.Stakeholder;
 import com.attus.processmanager.models.enums.StakeholderType;
+import com.attus.processmanager.service.StakeholderLegalProcessService;
 import com.attus.processmanager.service.StakeholderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("stakeholders")
@@ -15,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 public class StakeholderController {
 
     private final StakeholderService stakeholderService;
+
+    private final StakeholderLegalProcessService stakeholderLegalProcessService;
 
     @GetMapping
     public ResponseEntity<Object> findAll(@RequestParam(required = false) String type) {
@@ -67,7 +74,9 @@ public class StakeholderController {
     public ResponseEntity<Object> getById(@PathVariable("id") Long id) {
         try {
             Stakeholder stakeholder = stakeholderService.getById(id);
-            return ResponseEntity.ok(stakeholder);
+            List<LegalProcess> list = stakeholderLegalProcessService.listBy(stakeholder);
+            StakeholderRepresentation stakeholderRepresentation = new StakeholderRepresentation(stakeholder, list);
+            return ResponseEntity.ok(stakeholderRepresentation);
         } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

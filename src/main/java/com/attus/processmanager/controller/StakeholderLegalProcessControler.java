@@ -1,5 +1,6 @@
 package com.attus.processmanager.controller;
 
+import com.attus.processmanager.dto.StakeholderLegalProcessRepresentation;
 import com.attus.processmanager.models.StakeholderLegalProcess;
 import com.attus.processmanager.service.StakeholderLegalProcessService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,8 @@ public class StakeholderLegalProcessControler {
     public ResponseEntity<Object> create(@RequestBody StakeholderLegalProcess stakeholderLegalProcess) {
         try {
             StakeholderLegalProcess savedStake = service.save(stakeholderLegalProcess);
-            return ResponseEntity.status(201).body(savedStake);
+            StakeholderLegalProcessRepresentation stake = new StakeholderLegalProcessRepresentation(savedStake);
+            return ResponseEntity.status(201).body(stake);
         } catch (IllegalArgumentException | NullPointerException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

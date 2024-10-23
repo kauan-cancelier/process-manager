@@ -24,7 +24,7 @@ public class StakeholderController {
     private final StakeholderLegalProcessService stakeholderLegalProcessService;
 
     @GetMapping
-    public ResponseEntity<Object> findAll(@RequestParam(required = false) String type) {
+    public ResponseEntity<Object> list(@RequestParam(required = false) String type) {
         try {
             if (type != null && !type.isBlank()) {
                 return ResponseEntity.ok(stakeholderService.list(StakeholderType.tryConvert(type)));

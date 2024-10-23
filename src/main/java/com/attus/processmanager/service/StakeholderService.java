@@ -5,7 +5,6 @@ import com.attus.processmanager.models.enums.StakeholderType;
 import com.attus.processmanager.repository.StakeholderRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

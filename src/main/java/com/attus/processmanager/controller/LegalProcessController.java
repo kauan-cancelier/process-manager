@@ -60,7 +60,6 @@ public class LegalProcessController {
             }
             existingProcess.setDescription(updatedProcess.getDescription());
             existingProcess.setNumber(updatedProcess.getNumber());
-
             LegalProcess editedLegalProcess = service.save(existingProcess);
 
             return ResponseEntity.ok().body(editedLegalProcess);
